@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "340156750175",
+    "firebase_url": "https://medicinealarm-6f45b-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "medicinealarm-6f45b",
+    "storage_bucket": "medicinealarm-6f45b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:340156750175:android:b2744bd36dbad16bbafeea",
+        "android_client_info": {
+          "package_name": "com.example.remotebt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOQjpg7PULQ_jSm_Ui5EZWjDy2go_8lQk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

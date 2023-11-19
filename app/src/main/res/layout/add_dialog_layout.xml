@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="350dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RadioGroup
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:id="@+id/radioGroup_user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radio_user1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="사용자1"/>
+
+        <RadioButton
+            android:id="@+id/radio_user2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="사용자2"/>
+    </RadioGroup>
+
+    <TimePicker
+        android:id="@+id/timePicker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:timePickerMode="spinner"/>
+
+    <TextView
+        android:id="@+id/selectedTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textSize="18sp"
+        android:layout_marginTop="8dp"/>
+
+
+
+    <RadioGroup
+        android:gravity="center"
+        android:id="@+id/radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:checked="true"
+            android:id="@+id/radioMorning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="아침"/>
+
+        <RadioButton
+            android:id="@+id/radioNoon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="점심"/>
+
+        <RadioButton
+            android:id="@+id/radioEvening"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="저녘"/>
+    </RadioGroup>
+
+
+
+
+
+    <Button
+        android:layout_marginTop="10dp"
+        android:id="@+id/dialogButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="확인"
+        android:layout_gravity="center_horizontal"/>
+</LinearLayout>
