@@ -50,9 +50,11 @@ public class NotificationReceiver extends BroadcastReceiver {
         String contentValue = intent.getStringExtra("content");
         String mealTime = intent.getStringExtra("mealtime");
         String user = intent.getStringExtra("user");
+        int alarm_no = intent.getIntExtra("alarm_no",0);
         Log.e(TAG, "onReceive contentValue값 확인 : " + contentValue);
         Log.e(TAG, "onReceive mealTime값 확인 : " + mealTime);
         Log.e(TAG, "onReceive user값 확인 : " + user);
+        Log.e(TAG, "onReceive alarm_no값 확인 : " + alarm_no);
 
         builder = null;
 
@@ -85,6 +87,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         intent2.putExtra("content", "알람리스트 테스트");
         intent2.putExtra("mealtime", mealTime);
         intent2.putExtra("user", user);
+        intent2.putExtra("alarm_no", alarm_no);
 
         // FLAG_UPDATE_CURRENT ->
         // 설명된 PendingIntent가 이미 존재하는 경우 유지하되, 추가 데이터를 이 새 Intent에 있는 것으로 대체함을 나타내는 플래그입니다.

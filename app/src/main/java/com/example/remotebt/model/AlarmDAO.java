@@ -12,6 +12,20 @@ public class AlarmDAO {
         this.mealtime = mealtime;
     }
 
+    public AlarmDAO(int alarm_no, String time, String user, String mealtime){
+        this.time = time;
+        this.user = user;
+        this.mealtime = mealtime;
+    }
+
+    public void setAlarm_no(int alarm_no) {
+        this.alarm_no = alarm_no;
+    }
+
+    public int getAlarm_no() {
+        return alarm_no;
+    }
+
     public String getUser() {
         return user;
     }

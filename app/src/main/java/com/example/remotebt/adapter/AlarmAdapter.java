@@ -1,5 +1,6 @@
 package com.example.remotebt.adapter;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.remotebt.OnItemClickListener;
 import com.example.remotebt.model.AlarmDAO;
 import com.example.remotebt.R;
 
@@ -17,11 +19,13 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
 
     // 알람 리스트
     private ArrayList<AlarmDAO> dataList;
+    private OnItemClickListener onItemClickListener;
 
     // 알람 생성자
     public AlarmAdapter(ArrayList<AlarmDAO> dataList) {
         this.dataList = dataList;
     }
+
 
     // 뷰홀더 생성
     @NonNull
@@ -31,9 +35,13 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         return new AlarmViewHolder(view);
     }
 
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.onItemClickListener = listener;
+    }
+
     // 뷰 바인드
     @Override
-    public void onBindViewHolder(@NonNull AlarmViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AlarmViewHolder holder, @SuppressLint("RecyclerView") int position) {
         AlarmDAO alarmDAO= dataList.get(position);
         // 시간 분 부분 한자리수일경우,
         // 앞에 0 을 추가하여 2자리 수로 변경
@@ -48,6 +56,15 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         holder.textView.setText(get_time);
         holder.tv_meal.setText(alarmDAO.getMealtime());
         holder.tv_user.setText(alarmDAO.getUser());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onItemClickListener != null) {
+                    onItemClickListener.onItemClick(v, position);
+                }
+            }
+        });
     }
 
     // 알람 리스트의 수

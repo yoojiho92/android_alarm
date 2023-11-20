@@ -26,6 +26,8 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.remotebt.AlarmActivity;
+import com.example.remotebt.OnItemClickListener;
 import com.example.remotebt.R;
 import com.example.remotebt.callback.SwipeToDeleteCallback;
 import com.example.remotebt.adapter.AlarmAdapter;
@@ -71,7 +73,6 @@ public class ListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
 
         dbHelper = new DatabaseHelper(getContext());
-
         
         
         Switch aSwitch = view.findViewById(R.id.sw_fragment_list_mode);
@@ -124,6 +125,18 @@ public class ListFragment extends Fragment {
         // 더 많은 아이템 추가...
 
         alarmAdapter = new AlarmAdapter(datalist);
+        alarmAdapter.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                AlarmDAO alarmDAO = datalist.get(position);
+                Intent intent2 = new Intent(getContext(), AlarmActivity.class);
+                intent2.putExtra("content", "알람리스트 테스트");
+                intent2.putExtra("mealtime", alarmDAO.getMealtime());
+                intent2.putExtra("user", alarmDAO.getUser());
+                intent2.putExtra("alarm_no", alarmDAO.getAlarm_no());
+                startActivity(intent2);
+            }
+        });
         recyclerView.setAdapter(alarmAdapter);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(getContext(),alarmAdapter,dbHelper));
@@ -136,16 +149,20 @@ public class ListFragment extends Fragment {
         return view;
     }
 
+
     private void load_db(){
         List<AlarmDAO> alarms = dbHelper.getAllAlarms();
         datalist.clear();
         for (AlarmDAO alarm : alarms) {
-            AlarmDAO newAlarm = new AlarmDAO(alarm.getTime(), alarm.getUser(), alarm.getMealtime());
+            AlarmDAO newAlarm = new AlarmDAO(alarm.getAlarm_no(),alarm.getTime(), alarm.getUser(), alarm.getMealtime());
             datalist.add(newAlarm);
-            alarmAdapter.notifyDataSetChanged();
             // 출력 또는 다른 처리
-            Log.d("AlarmInfo", "Time: " + alarm.getTime() + ", User: " + alarm.getUser() + ", Mealtime: " + alarm.getMealtime());
+            Log.d("AlarmInfo", "Alarm No: " + alarm.getAlarm_no() +
+                    ", Time: " + alarm.getTime() +
+                    ", User: " + alarm.getUser() +
+                    ", Mealtime: " + alarm.getMealtime());
         }
+        alarmAdapter.notifyDataSetChanged();
     }
 
     private void showAddDialog() {
@@ -162,23 +179,18 @@ public class ListFragment extends Fragment {
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (radioGroup.getCheckedRadioButtonId() != -1) {
-                    if (rg_user.getCheckedRadioButtonId() != -1) {
-                        Toast.makeText(getContext(), "유저를 선택해주세요.", Toast.LENGTH_SHORT).show();
-                    }
-                    Toast.makeText(getContext(), "아침/점심/저녘 을 선택해주세요.", Toast.LENGTH_SHORT).show();
-                }
-
                 int hour = timePicker.getHour();
                 int minute = timePicker.getMinute();
                 String selectedMealTime = ((RadioButton)dialog.findViewById(radioGroup.getCheckedRadioButtonId())).getText().toString();
                 String selectedUser = ((RadioButton)dialog.findViewById(rg_user.getCheckedRadioButtonId())).getText().toString();
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    setNotice(hour + ":" + minute + ":" + "00", selectedMealTime, selectedUser);
-                }
+
                 AlarmDAO newAlarm = new AlarmDAO(hour+":"+minute, selectedUser, selectedMealTime);
-                dbHelper.insertOrUpdateAlarm(newAlarm);
+                int alarmNo = dbHelper.insertOrUpdateAlarm(newAlarm);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    setNotice(hour + ":" + minute + ":" + "00", selectedMealTime, selectedUser, alarmNo);
+                }
                 load_db();
                 dialog.dismiss();
             }
@@ -204,11 +216,13 @@ public class ListFragment extends Fragment {
                 String selectedUser = "사용자1";
                 String selectedMealTime = ((RadioButton)dialog.findViewById(rg_position.getCheckedRadioButtonId())).getText().toString();
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    setNotice(hour + ":" + minute + ":" + "00", selectedMealTime, selectedUser);
-                }
+
                 AlarmDAO newAlarm = new AlarmDAO(hour+":"+minute, selectedUser, selectedMealTime);
-                dbHelper.insertOrUpdateAlarm(newAlarm);
+                int alarmNo = dbHelper.insertOrUpdateAlarm(newAlarm);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    setNotice(hour + ":" + minute + ":" + "00", selectedMealTime, selectedUser, alarmNo);
+                }
                 load_db();
                 dialog.dismiss();
             }
@@ -234,13 +248,14 @@ public class ListFragment extends Fragment {
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void setNotice(String alarmTimeValue, String mealtime, String user) {
+    private void setNotice(String alarmTimeValue, String mealtime, String user, int alarmNo) {
         Intent receiverIntent = new Intent(getContext(), NotificationReceiver.class);
         receiverIntent.putExtra("content", "알람리스트 테스트");
         receiverIntent.putExtra("mealtime", mealtime);
         receiverIntent.putExtra("user", user);
+        receiverIntent.putExtra("alarm_no", alarmNo);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 123, receiverIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), alarmNo, receiverIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         LocalDate now = LocalDate.now();

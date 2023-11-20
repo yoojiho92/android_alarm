@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,33 +35,37 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
         int position = viewHolder.getAdapterPosition();
-
-
         AlarmDAO alarmDAO = adapter.getArray().get(position);
 
-        Intent receiverIntent = new Intent(context, NotificationReceiver.class);
-        receiverIntent.putExtra("content", "알람리스트 테스트");
-        receiverIntent.putExtra("mealtime", alarmDAO.getMealtime());
-        receiverIntent.putExtra("user", alarmDAO.getUser());
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                context,
-                123, // 알람 설정 시 사용했던 동일한 요청 코드
-                receiverIntent, // 알람 설정 시 사용했던 동일한 인텐트
-                PendingIntent.FLAG_UPDATE_CURRENT
-        );
+        int alarmNo = databaseHelper.getAlarmNo(alarmDAO.getTime(), alarmDAO.getUser(), alarmDAO.getMealtime());
 
-        // AlarmManager 인스턴스를 가져옵니다.
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmNo != -1) {
+            Intent receiverIntent = new Intent(context, NotificationReceiver.class);
+            receiverIntent.putExtra("content", "알람리스트 테스트");
+            receiverIntent.putExtra("mealtime", alarmDAO.getMealtime());
+            receiverIntent.putExtra("user", alarmDAO.getUser());
+            receiverIntent.putExtra("alarm_no", alarmNo);
 
-        // 알람을 해제합니다.
-        alarmManager.cancel(pendingIntent);
+            Log.d("AlarmSwipeDelete", "Alarm No: " + alarmNo +
+                    ", Time: " + alarmDAO.getTime() +
+                    ", User: " + alarmDAO.getUser() +
+                    ", Mealtime: " + alarmDAO.getMealtime());
 
-        // DB에서 해당 알람을 삭제합니다.
-        databaseHelper.deleteAlarm(alarmDAO.getTime());
-        // 리스트 뷰에서 알람 요소를 삭제합니다.
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                    context,
+                    alarmNo,
+                    receiverIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+            );
+
+
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            alarmManager.cancel(pendingIntent);
+
+            databaseHelper.deleteAlarm(alarmNo);
+        }
+
         adapter.removeItem(position);
-
-
     }
 }

@@ -20,6 +20,7 @@ public class AlarmActivity extends AppCompatActivity {
     private String TAG = this.getClass().getSimpleName();
     private String user ="";
     private String mealTime ="";
+    private int alarm_no = 0;
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,7 @@ public class AlarmActivity extends AppCompatActivity {
         String contentValue = intent.getStringExtra("content");
         mealTime = intent.getStringExtra("mealtime");
         user = intent.getStringExtra("user");
+        alarm_no = intent.getIntExtra("alarm_no",0);
         if (user == null){
             user = "";
         }
